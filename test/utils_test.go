@@ -7,11 +7,10 @@
 package test
 
 import (
-	"github.com/izghua/zgh/utils/cron"
-	"github.com/izghua/zgh/utils/hashid"
-	"github.com/izghua/zgh/utils/mail"
 	"testing"
-	"time"
+
+	"github.com/owarai/zgh/utils/hashid"
+	"github.com/owarai/zgh/utils/mail"
 )
 
 // the alarm init must be the zlog init first
@@ -35,14 +34,12 @@ import (
 //	}
 //}
 
-
-
 func TestMail(t *testing.T) {
 	mail := new(mail.EmailParam)
 	mailUser := mail.SetMailUser("test@test.com")
 	mailPwd := mail.SetMailPwd("test")
-	mailHost :=  mail.SetMailHost("smtp.mxhichina.com:25")
-	_,err := mail.MailInit(mailPwd,mailHost,mailUser)
+	mailHost := mail.SetMailHost("smtp.mxhichina.com:25")
+	_, err := mail.MailInit(mailPwd, mailHost, mailUser)
 	if err != nil {
 		t.Error("it is err MailInit")
 	} else {
@@ -54,7 +51,7 @@ func TestHashId(t *testing.T) {
 	hd := new(hashid.HashIdParams)
 	salt := hd.SetHashIdSalt("test salt")
 	hdLength := hd.SetHashIdLength(10)
-	_,err := hd.HashIdInit(hdLength,salt)
+	_, err := hd.HashIdInit(hdLength, salt)
 	if err != nil {
 		t.Error("it is err")
 	} else {
@@ -76,7 +73,3 @@ func TestHashId(t *testing.T) {
 //		t.Log("it is right")
 //	}
 //}
-
-func TestZgCron(t *testing.T) {
-	cron.ZgCron(5*time.Second, func() {})
-}

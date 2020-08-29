@@ -1,11 +1,13 @@
 package ginmiddleware
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/izghua/zgh"
-	"github.com/satori/go.uuid"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	uuid "github.com/satori/go.uuid"
+
+	"github.com/owarai/zgh"
 )
 
 type RequestIDOptions struct {

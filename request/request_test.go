@@ -18,8 +18,6 @@ import (
 	"time"
 )
 
-
-
 type (
 	heyYou struct {
 		Hey string `json:"hey"`

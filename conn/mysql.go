@@ -8,12 +8,14 @@ package conn
 
 import (
 	"fmt"
-	"github.com/go-xorm/xorm"
-	"github.com/izghua/zgh"
-	"github.com/izghua/zgh/conf"
-	"github.com/izghua/zgh/utils/alarm"
 	"os"
 	"time"
+
+	"github.com/go-xorm/xorm"
+
+	"github.com/owarai/zgh"
+	"github.com/owarai/zgh/conf"
+	"github.com/owarai/zgh/utils/alarm"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -21,16 +23,16 @@ import (
 var mysql *xorm.Engine
 
 type SqlParam struct {
-	Host string
-	Port string
+	Host     string
+	Port     string
 	DataBase string
 	UserName string
 	Password string
 }
 
-type Sp  func(*SqlParam) interface{}
+type Sp func(*SqlParam) interface{}
 
-func (p *Sp)SetDbHost(host string) Sp {
+func (p *Sp) SetDbHost(host string) Sp {
 	return func(p *SqlParam) interface{} {
 		h := p.Host
 		p.Host = host
@@ -38,7 +40,7 @@ func (p *Sp)SetDbHost(host string) Sp {
 	}
 }
 
-func (p *Sp)SetDbPort(port string) Sp {
+func (p *Sp) SetDbPort(port string) Sp {
 	return func(p *SqlParam) interface{} {
 		pt := p.Port
 		p.Port = port
@@ -46,7 +48,7 @@ func (p *Sp)SetDbPort(port string) Sp {
 	}
 }
 
-func (p *Sp)SetDbDataBase(dataBase string) Sp {
+func (p *Sp) SetDbDataBase(dataBase string) Sp {
 	return func(p *SqlParam) interface{} {
 		db := p.DataBase
 		p.DataBase = dataBase
@@ -54,17 +56,15 @@ func (p *Sp)SetDbDataBase(dataBase string) Sp {
 	}
 }
 
-
-func (p *Sp)SetDbPassword(pwd string) Sp {
-	return  func(p *SqlParam) interface{} {
+func (p *Sp) SetDbPassword(pwd string) Sp {
+	return func(p *SqlParam) interface{} {
 		password := p.Password
 		p.Password = pwd
 		return password
 	}
 }
 
-
-func (p *Sp)SetDbUserName(u string) Sp {
+func (p *Sp) SetDbUserName(u string) Sp {
 	return func(p *SqlParam) interface{} {
 		name := p.UserName
 		p.UserName = u
@@ -72,25 +72,25 @@ func (p *Sp)SetDbUserName(u string) Sp {
 	}
 }
 
-func InitMysql(options ...Sp) (*xorm.Engine,error){
+func InitMysql(options ...Sp) (*xorm.Engine, error) {
 	q := &SqlParam{
-		Host:conf.DBHOST,
-		Port:conf.DBPORT,
-		Password:conf.DBPASSWORD,
-		DataBase:conf.DBDATABASE,
-		UserName:conf.DBUSERNAME,
+		Host:     conf.DBHOST,
+		Port:     conf.DBPORT,
+		Password: conf.DBPASSWORD,
+		DataBase: conf.DBDATABASE,
+		UserName: conf.DBUSERNAME,
 	}
-	for _,option := range options {
+	for _, option := range options {
 		option(q)
 	}
 
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", q.UserName, q.Password, q.Host, q.Port, q.DataBase)
 	engine, err := xorm.NewEngine("mysql", dataSourceName)
 	if err != nil {
-		zgh.ZLog().Error("mysql","初始化数据库，创建连接异常:"+err.Error())
-		return nil,err
+		zgh.ZLog().Error("mysql", "初始化数据库，创建连接异常:"+err.Error())
+		return nil, err
 	}
-	engine.TZLocation,_ = time.LoadLocation("Asia/Chongqing")
+	engine.TZLocation, _ = time.LoadLocation("Asia/Chongqing")
 	engine.SetMaxIdleConns(3)
 	engine.SetMaxOpenConns(20)
 	engine.SetConnMaxLifetime(0)
@@ -105,7 +105,7 @@ func InitMysql(options ...Sp) (*xorm.Engine,error){
 			}
 		}
 	}(mysql)
-	return mysql,nil
+	return mysql, nil
 }
 
 func autoConnectMySQL(tryTimes int, maxTryTimes int) int {
@@ -113,7 +113,7 @@ func autoConnectMySQL(tryTimes int, maxTryTimes int) int {
 	if tryTimes <= maxTryTimes {
 		if mysql.Ping() != nil {
 			message := fmt.Sprintf("数据库连接失败,已重连%d次", tryTimes)
-			zgh.ZLog().Error("mysql",message)
+			zgh.ZLog().Error("mysql", message)
 			go alarm.Alarm(message)
 		}
 		tryTimes = autoConnectMySQL(tryTimes, maxTryTimes)
@@ -125,18 +125,17 @@ func MySQLAutoConnect() {
 	autoConnectMySQL(0, 5)
 }
 
-
-func SqlDump(fileName string,filePath string) error {
-	zgh.ZLog().Info("message","sql dump file","name",fileName,"path",filePath)
-	err := os.Remove(filePath+fileName)
+func SqlDump(fileName string, filePath string) error {
+	zgh.ZLog().Info("message", "sql dump file", "name", fileName, "path", filePath)
+	err := os.Remove(filePath + fileName)
 	if err != nil {
-		zgh.ZLog().Error("message","sql dump has error","error",err.Error())
+		zgh.ZLog().Error("message", "sql dump has error", "error", err.Error())
 	}
 
-	err = mysql.DumpAllToFile(filePath+fileName)
+	err = mysql.DumpAllToFile(filePath + fileName)
 
 	if err != nil {
-		zgh.ZLog().Error("message","sql dump all to file has error","error",err.Error())
+		zgh.ZLog().Error("message", "sql dump all to file has error", "error", err.Error())
 		return err
 	}
 	return nil

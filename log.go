@@ -8,20 +8,22 @@ package zgh
 
 import (
 	"errors"
-	"github.com/Penglq/QLog"
-	"github.com/izghua/zgh/conf"
 	"log"
 	"runtime"
 	"strings"
+
+	"github.com/Penglq/QLog"
+
+	"github.com/owarai/zgh/conf"
 )
 
 type ZLogParam struct {
-	FilePath string
-	FileName string
-	FileSuffix string
-	FileMaxSize int64
+	FilePath     string
+	FileName     string
+	FileSuffix   string
+	FileMaxSize  int64
 	FileMaxNSize int
-	TimeZone string
+	TimeZone     string
 }
 
 var zLogParam *ZLogParam
@@ -60,7 +62,6 @@ func (zlp *ZLogParam) SetFileMaxSize(fms int64) zp {
 	}
 }
 
-
 func (zlp *ZLogParam) SetFileMaxNSize(fmns int) zp {
 	return func(zlp *ZLogParam) interface{} {
 		f := zlp.FileMaxNSize
@@ -79,16 +80,16 @@ func (zlp *ZLogParam) SetTimeZone(tz string) zp {
 
 var Zog QLog.LoggerInterface
 
-func (zlp *ZLogParam)ZLogInit(options ...zp) error {
+func (zlp *ZLogParam) ZLogInit(options ...zp) error {
 	q := &ZLogParam{
-		FilePath:conf.LOGFILEPATH,
-		FileName:conf.LOGFILENAME,
-		FileSuffix:conf.LOGFILESUFFIX,
-		FileMaxSize:conf.LOGFILEMAXSIZE,
-		FileMaxNSize:conf.LOGFILEMAXNSIZE,
-		TimeZone:conf.LOGTIMEZONE,
+		FilePath:     conf.LOGFILEPATH,
+		FileName:     conf.LOGFILENAME,
+		FileSuffix:   conf.LOGFILESUFFIX,
+		FileMaxSize:  conf.LOGFILEMAXSIZE,
+		FileMaxNSize: conf.LOGFILEMAXNSIZE,
+		TimeZone:     conf.LOGTIMEZONE,
 	}
-	for _,option := range options {
+	for _, option := range options {
 		option(q)
 	}
 	zLogParam = q
@@ -97,14 +98,13 @@ func (zlp *ZLogParam)ZLogInit(options ...zp) error {
 	}
 	l := QLog.GetLogger()
 	l.SetConfig(QLog.INFO, zLogParam.TimeZone,
-		QLog.WithFileOPT(zLogParam.FilePath, zLogParam.FileName, zLogParam.FileSuffix, zLogParam.FileMaxSize,zLogParam.FileMaxNSize),
+		QLog.WithFileOPT(zLogParam.FilePath, zLogParam.FileName, zLogParam.FileSuffix, zLogParam.FileMaxSize, zLogParam.FileMaxNSize),
 		QLog.WithConsoleOPT(),
 	)
 
 	Zog = l
 	return nil
 }
-
 
 // the log is designed by my colleague
 // https://github.com/Penglq/QLog
@@ -113,12 +113,11 @@ func (zlp *ZLogParam)ZLogInit(options ...zp) error {
 // then you must describe it is type
 func ZLog() QLog.LoggerInterface {
 	//TODO:: i want to add prefix for log ,but the package is not written by myself
-	funcName,_,_,ok := runtime.Caller(1)
+	funcName, _, _, ok := runtime.Caller(1)
 	if ok {
 		fName := runtime.FuncForPC(funcName).Name()
-		arrStr := strings.Split(fName,"/")
-		Zog.SetTextPrefix("method",arrStr[len(arrStr)-1])
+		arrStr := strings.Split(fName, "/")
+		Zog.SetTextPrefix("method", arrStr[len(arrStr)-1])
 	}
 	return Zog
 }
-

@@ -2,11 +2,13 @@ package api
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/izghua/zgh"
-	"github.com/izghua/zgh/conf"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/owarai/zgh"
+	"github.com/owarai/zgh/conf"
 )
 
 type Gin struct {

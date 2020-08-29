@@ -7,23 +7,28 @@
 package conn
 
 import (
-	"github.com/go-redis/redis"
-	"github.com/izghua/zgh"
-	"github.com/izghua/zgh/conf"
+	"context"
+
+	"github.com/go-redis/redis/v8"
+
+	"github.com/owarai/zgh"
+	"github.com/owarai/zgh/conf"
 )
 
-var redisC *RedisClient
+var (
+	ctx    = context.Background()
+	redisC *RedisClient
+)
 
-//var RedisC1 *redis.Client
+// var RedisC1 *redis.Client
 
 type RedisClient struct {
-	Addr string
+	Addr     string
 	Password string
-	Db int
+	Db       int
 }
 
-
-func (rc *RedisClient)SetRedisAddr(addr string) func(*RedisClient) interface{} {
+func (rc *RedisClient) SetRedisAddr(addr string) func(*RedisClient) interface{} {
 	return func(rc *RedisClient) interface{} {
 		rcA := rc.Addr
 		rc.Addr = addr
@@ -31,7 +36,7 @@ func (rc *RedisClient)SetRedisAddr(addr string) func(*RedisClient) interface{} {
 	}
 }
 
-func (rc *RedisClient)SetRedisPwd(pwd string) func(*RedisClient) interface{} {
+func (rc *RedisClient) SetRedisPwd(pwd string) func(*RedisClient) interface{} {
 	return func(rc *RedisClient) interface{} {
 		rcp := rc.Password
 		rc.Password = pwd
@@ -39,7 +44,7 @@ func (rc *RedisClient)SetRedisPwd(pwd string) func(*RedisClient) interface{} {
 	}
 }
 
-func (rc *RedisClient)SetRedisDb(db int) func(*RedisClient) interface{} {
+func (rc *RedisClient) SetRedisDb(db int) func(*RedisClient) interface{} {
 	return func(rc *RedisClient) interface{} {
 		rcdb := rc.Db
 		rc.Db = db
@@ -47,14 +52,13 @@ func (rc *RedisClient)SetRedisDb(db int) func(*RedisClient) interface{} {
 	}
 }
 
-
-func (rc *RedisClient)RedisInit(options ...func(*RedisClient) interface{}) (*redis.Client,error) {
+func (rc *RedisClient) RedisInit(options ...func(*RedisClient) interface{}) (*redis.Client, error) {
 	q := &RedisClient{
-		Addr:conf.REDISADDR,
-		Password:conf.REDISPWD,
-		Db:conf.REDISDB,
+		Addr:     conf.REDISADDR,
+		Password: conf.REDISPWD,
+		Db:       conf.REDISDB,
 	}
-	for _,option := range options {
+	for _, option := range options {
 		option(q)
 	}
 	redisC = q
@@ -62,15 +66,15 @@ func (rc *RedisClient)RedisInit(options ...func(*RedisClient) interface{}) (*red
 	client := redis.NewClient(&redis.Options{
 		Addr:     redisC.Addr,
 		Password: redisC.Password, // no password set
-		DB:       redisC.Db,  // use default DB
+		DB:       redisC.Db,       // use default DB
 	})
 
-	_, err := client.Ping().Result()
+	_, err := client.Ping(ctx).Result()
 
 	if err != nil {
-		zgh.ZLog().Error("content","redis client ping is error","error",err.Error())
-		return nil,err
+		zgh.ZLog().Error("content", "redis client ping is error", "error", err.Error())
+		return nil, err
 	}
-	//RedisC1 = client
-	return client,nil
+	// RedisC1 = client
+	return client, nil
 }

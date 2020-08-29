@@ -7,13 +7,14 @@
 package hashid
 
 import (
-	"github.com/izghua/zgh"
-	"github.com/izghua/zgh/conf"
 	"github.com/speps/go-hashids"
+
+	"github.com/owarai/zgh"
+	"github.com/owarai/zgh/conf"
 )
 
 type HashIdParams struct {
-	Salt string
+	Salt      string
 	MinLength int
 }
 
@@ -35,13 +36,12 @@ func (hd *HashIdParams) SetHashIdLength(minLength int) func(*HashIdParams) inter
 	}
 }
 
-
-func (hd *HashIdParams)HashIdInit(options ...func(*HashIdParams) interface{}) (*hashids.HashID,error) {
+func (hd *HashIdParams) HashIdInit(options ...func(*HashIdParams) interface{}) (*hashids.HashID, error) {
 	q := &HashIdParams{
-		Salt:conf.HASHIDSALT,
-		MinLength:conf.HASHIDMINLENGTH,
+		Salt:      conf.HASHIDSALT,
+		MinLength: conf.HASHIDMINLENGTH,
 	}
-	for _,option := range options {
+	for _, option := range options {
 		option(q)
 	}
 	hashIdParams = q
@@ -50,11 +50,8 @@ func (hd *HashIdParams)HashIdInit(options ...func(*HashIdParams) interface{}) (*
 	hds.MinLength = hashIdParams.MinLength
 	h, err := hashids.NewWithData(hds)
 	if err != nil {
-		zgh.ZLog().Error("content","hash new with data is error","error",err.Error())
-		return nil,err
+		zgh.ZLog().Error("content", "hash new with data is error", "error", err.Error())
+		return nil, err
 	}
-	return h,nil
+	return h, nil
 }
-
-
-

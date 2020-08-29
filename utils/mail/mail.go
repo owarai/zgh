@@ -11,67 +11,68 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/izghua/zgh"
-	"github.com/izghua/zgh/conf"
 	"io/ioutil"
 	"net/smtp"
 	"strings"
+
+	"github.com/owarai/zgh"
+	"github.com/owarai/zgh/conf"
 )
 
 type EmailType string
 
 type EmailParam struct {
-	User EmailType `json:"user"`
-	Password EmailType `json:"password"`
-	Host EmailType `json:"host"`
-	To EmailType `json:"to"`
-	Subject EmailType `json:"subject"`
-	Body EmailType `json:"body"`
-	MailType EmailType `json:"mail_type"`
+	User        EmailType `json:"user"`
+	Password    EmailType `json:"password"`
+	Host        EmailType `json:"host"`
+	To          EmailType `json:"to"`
+	Subject     EmailType `json:"subject"`
+	Body        EmailType `json:"body"`
+	MailType    EmailType `json:"mail_type"`
 	Description EmailType `json:"description"`
-	Attaches map[string]string
+	Attaches    map[string]string
 }
 
 var mailParam *EmailParam
 
 var mailAddr string
 
-type EM  func(*EmailParam) (interface{},error)
+type EM func(*EmailParam) (interface{}, error)
 
 func (et EmailType) CheckIsNull() error {
 	if string(et) == "" {
-		zgh.ZLog().Error("message","value can not be null")
+		zgh.ZLog().Error("message", "value can not be null")
 		return errors.New("value can not be null")
 	}
 	return nil
 }
 
-func (ep *EmailParam)SetMailUser(user EmailType) EM {
-	return func(e *EmailParam) (interface{},error) {
+func (ep *EmailParam) SetMailUser(user EmailType) EM {
+	return func(e *EmailParam) (interface{}, error) {
 		u := e.User
 		err := user.CheckIsNull()
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 		e.User = user
-		return u,nil
+		return u, nil
 	}
 }
 
-func (ep *EmailParam)SetMailPwd(pwd EmailType) EM {
-	return func(ep *EmailParam) (interface{},error) {
+func (ep *EmailParam) SetMailPwd(pwd EmailType) EM {
+	return func(ep *EmailParam) (interface{}, error) {
 		p := ep.Password
 		err := pwd.CheckIsNull()
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 		ep.Password = pwd
-		return p,nil
+		return p, nil
 	}
 }
 
-func (et EmailType)IsRight() error {
-	arr := strings.Split(string(et),":")
+func (et EmailType) IsRight() error {
+	arr := strings.Split(string(et), ":")
 	if len(arr) != 2 {
 		zgh.ZLog().Error("may be is not semicolon")
 		return errors.New("may be is not semicolon")
@@ -80,46 +81,46 @@ func (et EmailType)IsRight() error {
 	return nil
 }
 
-func (ep *EmailParam)SetMailHost(host EmailType) EM {
-	return func(ep *EmailParam) (interface{},error) {
+func (ep *EmailParam) SetMailHost(host EmailType) EM {
+	return func(ep *EmailParam) (interface{}, error) {
 		h := ep.Host
 		err := host.CheckIsNull()
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 		err = host.IsRight()
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 		ep.Host = host
-		return h,nil
+		return h, nil
 	}
 }
 
-func (ep *EmailParam)SetMailType(types EmailType) EM {
-	return func(ep *EmailParam) (interface{},error) {
+func (ep *EmailParam) SetMailType(types EmailType) EM {
+	return func(ep *EmailParam) (interface{}, error) {
 		ty := ep.MailType
 		err := types.CheckIsNull()
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 		ep.MailType = ty
-		return ty,nil
+		return ty, nil
 	}
 }
 
-func (ep *EmailParam)MailInit(options ...EM) (*EmailParam,error) {
+func (ep *EmailParam) MailInit(options ...EM) (*EmailParam, error) {
 	q := &EmailParam{
-		MailType:conf.MAIlTYPE,
+		MailType: conf.MAIlTYPE,
 	}
-	for _,option := range options {
-		_,err := option(q)
+	for _, option := range options {
+		_, err := option(q)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 	}
 	mailParam = q
-	return q,nil
+	return q, nil
 }
 
 func (ep *EmailParam) SetSubject(s EmailType) *EmailParam {
@@ -147,8 +148,7 @@ func (ep *EmailParam) SetTo(to EmailType) *EmailParam {
 	return ep
 }
 
-
-func (ep *EmailParam)SendMail2(to string) error {
+func (ep *EmailParam) SendMail2(to string) error {
 	sendTo := strings.Split(to, ";")
 
 	subject := ep.Subject
@@ -159,10 +159,10 @@ func (ep *EmailParam)SendMail2(to string) error {
 	password := string(ep.Password)
 	host := string(ep.Host)
 	//设置邮件
-	mime.WriteString(fmt.Sprintf("From: %s<%s>\r\nTo: %s\r\nSubject: %s\r\nMIME-Version: 1.0\r\n", user, user, to,  subject))
+	mime.WriteString(fmt.Sprintf("From: %s<%s>\r\nTo: %s\r\nSubject: %s\r\nMIME-Version: 1.0\r\n", user, user, to, subject))
 
 	mime.WriteString(fmt.Sprintf("Content-Type: multipart/mixed; boundary=%s\r\n", boundary))
-	mime.WriteString("Content-Description: "+ string(ep.Description) +"\r\n")
+	mime.WriteString("Content-Description: " + string(ep.Description) + "\r\n")
 
 	//邮件普通Text正文
 	mime.WriteString(fmt.Sprintf("--%s\r\n", boundary))
@@ -178,10 +178,9 @@ func (ep *EmailParam)SendMail2(to string) error {
 	mime.WriteString(string(ep.Body))
 	mime.WriteString(fmt.Sprintf("\n--%s--\r\n\r\n", boundaryHtml))
 
+	fmt.Println(ep.Subject, ep.Attaches, ep.Description, ep.Body, sendTo, host)
 
-	fmt.Println(ep.Subject,ep.Attaches,ep.Description,ep.Body,sendTo,host)
-
-	for k,v := range ep.Attaches {
+	for k, v := range ep.Attaches {
 		attaFile := v
 		attaFileName := k
 		mime.WriteString(fmt.Sprintf("\n--%s\r\n", boundary))
@@ -200,17 +199,15 @@ func (ep *EmailParam)SendMail2(to string) error {
 		mime.Write(b)
 	}
 
-	zgh.ZLog().Info("message","mail to the last")
+	zgh.ZLog().Info("message", "mail to the last")
 	mime.WriteString("\r\n--" + boundary + "--\r\n\r\n")
 	auth := smtp.PlainAuth("", user, password, mailAddr)
 	err := smtp.SendMail(host, auth, user, sendTo, mime.Bytes())
-	zgh.ZLog().Info("message","mail to the last","last",err)
+	zgh.ZLog().Info("message", "mail to the last", "last", err)
 	return err
 }
 
-
-
-func SendMail( to string, subject string, body string) error {
+func SendMail(to string, subject string, body string) error {
 	user := string(mailParam.User)
 	password := string(mailParam.Password)
 	host := string(mailParam.Host)
@@ -227,7 +224,6 @@ func SendMail( to string, subject string, body string) error {
 	msg = []byte(subject + contentType + body)
 	sendTo := strings.Split(to, ";")
 	err := smtp.SendMail(host, auth, user, sendTo, msg)
-	zgh.ZLog().Info("message","SendMail","last",err)
+	zgh.ZLog().Info("message", "SendMail", "last", err)
 	return err
 }
-

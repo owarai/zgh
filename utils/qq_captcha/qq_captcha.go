@@ -7,21 +7,21 @@
 package qq_captcha
 
 import (
-	"github.com/izghua/zgh/conf"
-	"github.com/izghua/zgh/request"
 	"net/http"
 	"time"
+
+	"github.com/owarai/zgh/conf"
+	"github.com/owarai/zgh/request"
 )
 
 type QQCaptcha struct {
-	Aid string
+	Aid          string
 	AppSecretKey string
-	Ticket string
-	Randstr string
-	UserIP  string
-	Url string
+	Ticket       string
+	Randstr      string
+	UserIP       string
+	Url          string
 }
-
 
 type qct func(qc *QQCaptcha) interface{}
 
@@ -43,11 +43,9 @@ func (qc *QQCaptcha) SetSecretKey(sk string) qct {
 
 var qqCaptcha *QQCaptcha
 
-
-func (qc *QQCaptcha)QQCaptchaInit(options ...qct) error {
-	q := &QQCaptcha{
-	}
-	for _,option := range options {
+func (qc *QQCaptcha) QQCaptchaInit(options ...qct) error {
+	q := &QQCaptcha{}
+	for _, option := range options {
 		option(q)
 	}
 	qqCaptcha = q
@@ -55,19 +53,19 @@ func (qc *QQCaptcha)QQCaptchaInit(options ...qct) error {
 }
 
 type QqCaptchaResponse struct {
-	Response int `json:"response"`
+	Response  int `json:"response"`
 	EvilLevel int `json:"evil_level"`
-	errMsg string `json:"err_msg"`
+	errMsg    string
 }
 
-func QQCaptchaVerify(ticket string,randStr string,userIP string) (*http.Response,[]error) {
+func QQCaptchaVerify(ticket string, randStr string, userIP string) (*http.Response, []error) {
 	resp := new(QqCaptchaResponse)
-	res, _,err := request.New().Get(conf.QCapUrl).
-		Param("aid",qqCaptcha.Aid).
-		Param("AppSecretKey",qqCaptcha.AppSecretKey).
-		Param("Ticket",ticket).
-		Param("Randstr",randStr).
-		Param("UserIP",userIP).
+	res, _, err := request.New().Get(conf.QCapUrl).
+		Param("aid", qqCaptcha.Aid).
+		Param("AppSecretKey", qqCaptcha.AppSecretKey).
+		Param("Ticket", ticket).
+		Param("Randstr", randStr).
+		Param("UserIP", userIP).
 		Timeout(time.Minute * 1).Type(request.TypeUrlencoded).EndStruct(resp)
-	return res,err
+	return res, err
 }

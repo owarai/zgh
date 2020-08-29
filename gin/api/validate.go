@@ -7,9 +7,11 @@
 package api
 
 import (
-	"github.com/astaxie/beego/validation"
-	"github.com/izghua/zgh"
 	"net/http"
+
+	"github.com/astaxie/beego/validation"
+
+	"github.com/owarai/zgh"
 )
 
 type validate interface {

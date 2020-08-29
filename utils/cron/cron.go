@@ -7,10 +7,10 @@
 package cron
 
 import (
-	"github.com/izghua/zgh"
 	"github.com/robfig/cron"
-)
 
+	"github.com/owarai/zgh"
+)
 
 //Field name   | Mandatory? | Allowed values  | Allowed special characters
 //----------   | ---------- | --------------  | --------------------------
@@ -22,11 +22,11 @@ import (
 //Day of week  | Yes        | 0-6 or SUN-SAT  | * / , - ?
 
 // @Note Note that this spec is not sorted by minute, hour , day, month, and week.
-func ZgCron(spec string,f func()) {
+func ZgCron(spec string, f func()) {
 	c := cron.New()
 	_ = c.AddFunc(spec, func() {
 		f()
-		zgh.ZLog().Info("ZgCron","ZgCron","Function",f)
+		zgh.ZLog().Info("ZgCron", "ZgCron", "Function", f)
 	})
 
 	c.Start()
@@ -42,6 +42,3 @@ func ZgCron(spec string,f func()) {
 	//	}
 	//}()
 }
-
-
-

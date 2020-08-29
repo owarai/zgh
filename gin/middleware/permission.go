@@ -8,6 +8,7 @@ package ginmiddleware
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,4 +23,3 @@ func Permission(routerAsName string) gin.HandlerFunc {
 		c.Next()
 	}
 }
-

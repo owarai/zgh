@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
-	"github.com/Penglq/QLog"
 	"io"
 	"io/ioutil"
 	"net"
@@ -18,6 +17,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Penglq/QLog"
 
 	"mime/multipart"
 

@@ -3,8 +3,8 @@ package hashid
 import (
 	"github.com/speps/go-hashids"
 
-	"github.com/owarai/zgh"
 	"github.com/owarai/zgh/conf"
+	"github.com/owarai/zgh/log"
 )
 
 type HashIdParams struct {
@@ -44,7 +44,7 @@ func (hd *HashIdParams) HashIdInit(options ...func(*HashIdParams) interface{}) (
 	hds.MinLength = hashIdParams.MinLength
 	h, err := hashids.NewWithData(hds)
 	if err != nil {
-		zgh.ZLog().Error("content", "hash new with data is error", "error", err.Error())
+		log.L().Error("content", "hash new with data is error", "error", err.Error())
 		return nil, err
 	}
 	return h, nil

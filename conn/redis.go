@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-redis/redis/v8"
 
-	"github.com/owarai/zgh"
 	"github.com/owarai/zgh/conf"
+	"github.com/owarai/zgh/log"
 )
 
 var (
@@ -66,7 +66,7 @@ func (rc *RedisClient) RedisInit(options ...func(*RedisClient) interface{}) (*re
 	_, err := client.Ping(ctx).Result()
 
 	if err != nil {
-		zgh.ZLog().Error("content", "redis client ping is error", "error", err.Error())
+		log.L().Error("content", "redis client ping is error", "error", err.Error())
 		return nil, err
 	}
 	// RedisC1 = client

@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	"github.com/owarai/zgh"
+	"github.com/owarai/zgh/log"
 )
 
 type RequestIDOptions struct {
@@ -28,14 +28,14 @@ func RequestID(options RequestIDOptions) gin.HandlerFunc {
 		if requestID == "" {
 			s := uuid.New()
 			//if err != nil {
-			//	zgh.ZLog().Error("message","uuid create  error","error",err.Error())
+			//	zgh.L().Error("message","uuid create  error","error",err.Error())
 			//}
 			requestID = s.String()
 		}
 
 		c.Writer.Header().Set("X-Begin-Time", beginTime)
 		c.Writer.Header().Set("X-Request-Id", requestID)
-		zgh.ZLog().Info("Message", "API Request", "header", c.Request.Header)
+		log.L().Info("Message", "API Request", "header", c.Request.Header)
 		c.Next()
 	}
 }

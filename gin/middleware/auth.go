@@ -5,9 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/owarai/zgh"
 	"github.com/owarai/zgh/gin/api"
 	"github.com/owarai/zgh/jwt"
+	"github.com/owarai/zgh/log"
 )
 
 func Auth() gin.HandlerFunc {
@@ -16,14 +16,14 @@ func Auth() gin.HandlerFunc {
 
 		token := c.Request.Header.Get("x-auth-token")
 		if token == "" {
-			zgh.ZLog().Error("method", "zgh.ginmiddleware.auth", "error", "token is null")
+			log.L().Error("method", "zgh.ginmiddleware.auth", "error", "token is null")
 			apiG.Response(http.StatusOK, 400000001, nil)
 			return
 		}
 
 		userId, err := jwt.ParseToken(token)
 		if err != nil {
-			zgh.ZLog().Error("method", "zgh.ginmiddleware.auth", "error", err.Error())
+			log.L().Error("method", "zgh.ginmiddleware.auth", "error", err.Error())
 			apiG.Response(http.StatusOK, 400000001, nil)
 			return
 		}

@@ -4,9 +4,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/owarai/zgh"
 	"github.com/owarai/zgh/conf"
 	"github.com/owarai/zgh/conn"
+	"github.com/owarai/zgh/log"
 	"github.com/owarai/zgh/utils/cron"
 	"github.com/owarai/zgh/utils/mail"
 	"github.com/owarai/zgh/utils/zip"
@@ -20,7 +20,7 @@ func (bp *BackUpParam) SetFiles(files ...string) *BackUpParam {
 	for _, v := range files {
 		f, err = os.Open(v)
 		if err != nil {
-			zgh.ZLog().Error("error", err.Error())
+			log.L().Error("error", err.Error())
 		}
 		fileArr = append(fileArr, f)
 	}
@@ -60,7 +60,7 @@ type BackUpParam struct {
 
 func (bp *BackUpParam) FilePathIsNull() *BackUpParam {
 	if bp.FilePath == "" {
-		zgh.ZLog().Warn("message", "data is null")
+		log.L().Warn("message", "data is null")
 		bp.SetFilePath(conf.BackUpFilePath)
 	}
 	return bp
@@ -68,7 +68,7 @@ func (bp *BackUpParam) FilePathIsNull() *BackUpParam {
 
 func (bp *BackUpParam) DestIsNull() *BackUpParam {
 	if bp.Dest == "" {
-		zgh.ZLog().Warn("message", "data is null")
+		log.L().Warn("message", "data is null")
 		bp.SetDest(conf.BackUpDest)
 	}
 	return bp
@@ -76,7 +76,7 @@ func (bp *BackUpParam) DestIsNull() *BackUpParam {
 
 func (bp *BackUpParam) FileNameIsNull() *BackUpParam {
 	if bp.FileName == "" {
-		zgh.ZLog().Warn("message", "data is null")
+		log.L().Warn("message", "data is null")
 		bp.SetFileName(time.Now().Format("2006-01-02") + conf.BackUpSqlFileName)
 	}
 	return bp
@@ -84,7 +84,7 @@ func (bp *BackUpParam) FileNameIsNull() *BackUpParam {
 
 func (bp *BackUpParam) DurationIsNull() *BackUpParam {
 	if bp.CronSpec == "" {
-		zgh.ZLog().Warn("message", "data is null")
+		log.L().Warn("message", "data is null")
 		bp.SetCronSpec(conf.BackUpDuration)
 	}
 	return bp
@@ -107,12 +107,12 @@ func (bp *BackUpParam) Backup() error {
 func (bp *BackUpParam) doBackUp() {
 	err := conn.SqlDump(bp.FileName, bp.FilePath)
 	if err != nil {
-		zgh.ZLog().Error("message", "back up sql dump is error", "error", err.Error())
+		log.L().Error("message", "back up sql dump is error", "error", err.Error())
 	}
 
 	err = zip.Compress(bp.Files, bp.Dest)
 	if err != nil {
-		zgh.ZLog().Error("message", "back up compress is error", "error", err.Error())
+		log.L().Error("message", "back up compress is error", "error", err.Error())
 		return
 	}
 	err = bp.Ep.SetAttaches(bp.Ep.Attaches).
@@ -121,7 +121,7 @@ func (bp *BackUpParam) doBackUp() {
 		SendMail2(string(bp.Ep.To))
 	//fmt.Println(bp.Ep.Attaches,bp.Ep.Subject,bp.Ep.Body)
 	if err != nil {
-		zgh.ZLog().Error("message", "back up send mail is error", "error", err.Error())
+		log.L().Error("message", "back up send mail is error", "error", err.Error())
 		return
 	}
 	return

@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/owarai/zgh"
 	"github.com/owarai/zgh/conf"
+	"github.com/owarai/zgh/log"
 )
 
 type Gin struct {
@@ -35,7 +35,7 @@ func (g *Gin) Response(httpCode, errCode int, data interface{}) {
 		"message": msg,
 		"data":    data,
 	})
-	zgh.ZLog().Info("message", "API Response", "code", errCode, "errMsg", msg, "took", roundedStr)
+	log.L().Info("message", "API Response", "code", errCode, "errMsg", msg, "took", roundedStr)
 	g.C.Abort()
 	return
 }

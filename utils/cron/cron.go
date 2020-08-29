@@ -3,7 +3,7 @@ package cron
 import (
 	"github.com/robfig/cron/v3"
 
-	"github.com/owarai/zgh"
+	"github.com/owarai/zgh/log"
 )
 
 // Field name   | Mandatory? | Allowed values  | Allowed special characters
@@ -20,7 +20,7 @@ func ZgCron(spec string, f func()) {
 	c := cron.New()
 	_, _ = c.AddFunc(spec, func() {
 		f()
-		zgh.ZLog().Info("ZgCron", "ZgCron", "Function", f)
+		log.L().Info("ZgCron", "ZgCron", "Function", f)
 	})
 
 	c.Start()

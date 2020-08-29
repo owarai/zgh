@@ -17,5 +17,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/speps/go-hashids v2.0.0+incompatible
+	go.uber.org/zap v1.15.0
 	golang.org/x/net v0.0.0-20190923162816-aa69164e4478
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

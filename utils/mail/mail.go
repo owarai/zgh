@@ -9,8 +9,8 @@ import (
 	"net/smtp"
 	"strings"
 
-	"github.com/owarai/zgh"
 	"github.com/owarai/zgh/conf"
+	"github.com/owarai/zgh/log"
 )
 
 type EmailType string
@@ -35,7 +35,7 @@ type EM func(*EmailParam) (interface{}, error)
 
 func (et EmailType) CheckIsNull() error {
 	if string(et) == "" {
-		zgh.ZLog().Error("message", "value can not be null")
+		log.L().Error("message", "value can not be null")
 		return errors.New("value can not be null")
 	}
 	return nil
@@ -68,7 +68,7 @@ func (ep *EmailParam) SetMailPwd(pwd EmailType) EM {
 func (et EmailType) IsRight() error {
 	arr := strings.Split(string(et), ":")
 	if len(arr) != 2 {
-		zgh.ZLog().Error("may be is not semicolon")
+		log.L().Error("may be is not semicolon")
 		return errors.New("may be is not semicolon")
 	}
 	mailAddr = arr[0]
@@ -193,11 +193,11 @@ func (ep *EmailParam) SendMail2(to string) error {
 		mime.Write(b)
 	}
 
-	zgh.ZLog().Info("message", "mail to the last")
+	log.L().Info("message", "mail to the last")
 	mime.WriteString("\r\n--" + boundary + "--\r\n\r\n")
 	auth := smtp.PlainAuth("", user, password, mailAddr)
 	err := smtp.SendMail(host, auth, user, sendTo, mime.Bytes())
-	zgh.ZLog().Info("message", "mail to the last", "last", err)
+	log.L().Info("message", "mail to the last", "last", err)
 	return err
 }
 
@@ -218,6 +218,6 @@ func SendMail(to string, subject string, body string) error {
 	msg = []byte(subject + contentType + body)
 	sendTo := strings.Split(to, ";")
 	err := smtp.SendMail(host, auth, user, sendTo, msg)
-	zgh.ZLog().Info("message", "SendMail", "last", err)
+	log.L().Info("message", "SendMail", "last", err)
 	return err
 }

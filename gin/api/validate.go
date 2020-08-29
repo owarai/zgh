@@ -5,7 +5,7 @@ import (
 
 	"github.com/astaxie/beego/validation"
 
-	"github.com/owarai/zgh"
+	"github.com/owarai/zgh/log"
 )
 
 type validate interface {
@@ -16,7 +16,7 @@ func (g *Gin) Validate(obj validate) bool {
 	valid := validation.Validation{}
 	b, err := valid.Valid(obj)
 	if err != nil {
-		zgh.ZLog().Error("message", "valid error", "err", err.Error())
+		log.L().Error("message", "valid error", "err", err.Error())
 		g.Response(http.StatusOK, 400000000, nil)
 		return false
 	}

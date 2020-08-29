@@ -1,9 +1,3 @@
-/**
- * Created by GoLand.
- * User: xzghua@gmail.com
- * Date: 2018-12-15
- * Time: 16:44
- */
 package qq_captcha
 
 import (

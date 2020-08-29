@@ -1,9 +1,3 @@
-/**
- * Created by GoLand.
- * User: xzghua@gmail.com
- * Date: 2018-12-13
- * Time: 22:18
- */
 package conn
 
 import (

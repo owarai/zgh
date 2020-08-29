@@ -1,9 +1,3 @@
-/**
- * Created by GoLand.
- * User: xzghua@gmail.com
- * Date: 2018-12-27
- * Time: 21:53
- */
 package ginmiddleware
 
 import (

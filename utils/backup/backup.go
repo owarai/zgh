@@ -1,9 +1,3 @@
-/**
- * Created by GoLand.
- * User: xzghua@gmail.com
- * Date: 2018-12-22
- * Time: 00:16
- */
 package backup
 
 import (

@@ -1,9 +1,3 @@
-/**
- * Created by GoLand.
- * User: xzghua@gmail.com
- * Date: 2018-12-14
- * Time: 23:48
- */
 package jwt
 
 import (

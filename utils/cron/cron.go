@@ -7,31 +7,31 @@
 package cron
 
 import (
-	"github.com/robfig/cron"
+	"github.com/robfig/cron/v3"
 
 	"github.com/owarai/zgh"
 )
 
-//Field name   | Mandatory? | Allowed values  | Allowed special characters
-//----------   | ---------- | --------------  | --------------------------
-//Seconds      | Yes        | 0-59            | * / , -
-//Minutes      | Yes        | 0-59            | * / , -
-//Hours        | Yes        | 0-23            | * / , -
-//Day of month | Yes        | 1-31            | * / , - ?
-//Month        | Yes        | 1-12 or JAN-DEC | * / , -
-//Day of week  | Yes        | 0-6 or SUN-SAT  | * / , - ?
+// Field name   | Mandatory? | Allowed values  | Allowed special characters
+// ----------   | ---------- | --------------  | --------------------------
+// Seconds      | Yes        | 0-59            | * / , -
+// Minutes      | Yes        | 0-59            | * / , -
+// Hours        | Yes        | 0-23            | * / , -
+// Day of month | Yes        | 1-31            | * / , - ?
+// Month        | Yes        | 1-12 or JAN-DEC | * / , -
+// Day of week  | Yes        | 0-6 or SUN-SAT  | * / , - ?
 
 // @Note Note that this spec is not sorted by minute, hour , day, month, and week.
 func ZgCron(spec string, f func()) {
 	c := cron.New()
-	_ = c.AddFunc(spec, func() {
+	_, _ = c.AddFunc(spec, func() {
 		f()
 		zgh.ZLog().Info("ZgCron", "ZgCron", "Function", f)
 	})
 
 	c.Start()
 
-	//go func() {
+	// go func() {
 	//	for {
 	//		f()
 	//		now := time.Now()
@@ -40,5 +40,5 @@ func ZgCron(spec string, f func()) {
 	//		t := time.NewTimer(next.Sub(now))
 	//		<-t.C
 	//	}
-	//}()
+	// }()
 }

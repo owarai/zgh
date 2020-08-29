@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 
 	"github.com/owarai/zgh"
 )
@@ -26,7 +26,7 @@ func RequestID(options RequestIDOptions) gin.HandlerFunc {
 		}
 
 		if requestID == "" {
-			s := uuid.NewV4()
+			s := uuid.New()
 			//if err != nil {
 			//	zgh.ZLog().Error("message","uuid create  error","error",err.Error())
 			//}

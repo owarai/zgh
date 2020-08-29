@@ -4,7 +4,6 @@ go 1.12
 
 require (
 	cloud.google.com/go v0.37.4 // indirect
-	github.com/Penglq/QLog v0.0.0-20190407122931-240a1c914e20
 	github.com/astaxie/beego v1.11.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.6.3

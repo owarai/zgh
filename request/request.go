@@ -5,30 +5,26 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"net"
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httputil"
+	"net/textproto"
 	"net/url"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/Penglq/QLog"
-
-	"mime/multipart"
-
-	"net/textproto"
-
-	"fmt"
-
-	"path/filepath"
-
 	"golang.org/x/net/publicsuffix"
+
+	"github.com/owarai/zgh/log"
 )
 
 type Request *http.Request
@@ -78,7 +74,7 @@ type SuperAgent struct {
 	BasicAuth         struct{ Username, Password string }
 	Debug             bool
 	CurlCommand       bool
-	logger            QLog.LoggerInterface
+	logger            log.Logger
 	WorkerId          string
 	Retryable         struct {
 		RetryableStatus []int
@@ -87,7 +83,7 @@ type SuperAgent struct {
 		Attempt         int
 		Enable          bool
 	}
-	//If true prevents clearing Superagent data and makes it possible to reuse it for the next requests
+	// If true prevents clearing Superagent data and makes it possible to reuse it for the next requests
 	DoNotClearSuperAgent bool
 }
 
@@ -117,7 +113,7 @@ func New() *SuperAgent {
 		BasicAuth:         struct{ Username, Password string }{},
 		Debug:             true,
 		CurlCommand:       false,
-		logger:            QLog.GetLogger(),
+		logger:            log.L(),
 	}
 	// disable keep alives by default, see this issue https://github.com/parnurzeal/gorequest/issues/75
 	s.Transport.DisableKeepAlives = true
@@ -136,7 +132,7 @@ func (s *SuperAgent) SetDoNotClearSuperAgent(enable bool) *SuperAgent {
 	return s
 }
 
-func (s *SuperAgent) SetLogger(logger QLog.LoggerInterface) *SuperAgent {
+func (s *SuperAgent) SetLogger(logger log.Logger) *SuperAgent {
 	s.logger = logger
 	return s
 }
